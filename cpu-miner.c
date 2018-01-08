@@ -114,6 +114,7 @@ struct workio_cmd {
 };
 
 enum algos {
+    ALGO_YESCRYPT,    /* yescrypt for BitZeny */
     ALGO_SCRYPT,      /* scrypt(1024,1,1) */
     ALGO_SHA256D,     /* SHA-256d */
     ALGO_KECCAK,      /* Keccak */
@@ -131,6 +132,7 @@ enum algos {
 };
 
 static const char *algo_names[] = {
+    [ALGO_YESCRYPT] =    "yescrypt",
     [ALGO_SCRYPT] =      "scrypt",
     [ALGO_SHA256D] =     "sha256d",
     [ALGO_KECCAK] =      "keccak",
@@ -166,7 +168,7 @@ int opt_timeout = 0;
 static int opt_scantime = 5;
 static json_t *opt_config;
 static const bool opt_time = true;
-static enum algos opt_algo = ALGO_SCRYPT;
+static enum algos opt_algo = ALGO_YESCRYPT;
 static int opt_scrypt_n = 1024;
 static int opt_n_threads;
 static int num_processors;
@@ -248,6 +250,7 @@ static char const usage[] =
 Usage: " PROGRAM_NAME " [OPTIONS]\n\
 Options:\n\
   -a, --algo=ALGO       specify the algorithm to use\n\
+                          yescrypt     yescrypt (default)\n\
                           scrypt       scrypt(1024, 1, 1) (default)\n\
                           scrypt:N     scrypt(N, 1, 1)\n\
                           sha256d      SHA-256d\n\
@@ -1214,7 +1217,7 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work) {
             free(xnonce2str);
         }
 
-        if (opt_algo == ALGO_SCRYPT)
+        if (opt_algo == ALGO_SCRYPT || opt_algo == ALGO_YESCRYPT)
             diff_to_target(work->target, sctx->job.diff / 65536.0);
         else
             diff_to_target(work->target, sctx->job.diff);
@@ -1359,6 +1362,9 @@ static void *miner_thread(void *userdata) {
         max64 *= thr_hashrates[thr_id];
         if (max64 <= 0) {
             switch (opt_algo) {
+            case ALGO_YESCRYPT:
+                max64 = 0x000fff;
+                break;
             case ALGO_SCRYPT:
                 max64 = opt_scrypt_n < 16 ? 0x3ffff : 0x3fffff / opt_scrypt_n;
                 break;
@@ -1395,6 +1401,10 @@ static void *miner_thread(void *userdata) {
 
 	
 		switch (opt_algo) {
+                case ALGO_YESCRYPT:
+                        rc = scanhash_yescrypt(thr_id, work.data, work.target,
+                                                       max_nonce, &hashes_done);
+                        break;
 		case ALGO_SCRYPT:
 			rc = scanhash_scrypt(thr_id, work.data, scratchbuf, work.target,
 					max_nonce, &hashes_done, opt_scrypt_n);
@@ -1432,8 +1442,10 @@ static void *miner_thread(void *userdata) {
 					&hashes_done);
 			break;
 		case ALGO_FRESH:
+/*
 			rc = scanhash_fresh(thr_id, work.data, work.target, max_nonce,
 					&hashes_done);
+*/
 			break;
 		case ALGO_X11:
 			rc = scanhash_x11(thr_id, work.data, work.target, max_nonce,

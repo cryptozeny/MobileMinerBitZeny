@@ -45,6 +45,7 @@ inline void freshhash(void* output, const void* input, uint32_t len)
 	memcpy(output, hash, 32);
 }
 
+/*
 int scanhash_fresh(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 					uint32_t max_nonce, uint64_t *hashes_done)
 {
@@ -114,3 +115,4 @@ int scanhash_fresh(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 	pdata[19] = n;
 	return 0;
 }
+*/

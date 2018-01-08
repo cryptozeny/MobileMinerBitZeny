@@ -171,6 +171,9 @@ void sha256_transform_8way(uint32_t *state, const uint32_t *block, int swap);
 
 static bool should_stop_mining=0;
 
+extern int scanhash_yescrypt(int thr_id, uint32_t *pdata, const uint32_t *ptarget, 
+                            uint32_t max_nonce, unsigned long *hashes_done);
+
 extern int scanhash_sha256d(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
                             uint32_t max_nonce, uint64_t *hashes_done);
 

@@ -1,15 +1,15 @@
 
 if WANT_JANSSON
-JANSSON_INCLUDES= -I$(top_srcdir)/compat/jansson
+JANSSON_AM_CPPFLAGS= -I$(top_srcdir)/compat/jansson
 else
-JANSSON_INCLUDES=
+JANSSON_AM_CPPFLAGS=
 endif
 
 EXTRA_DIST	= example-cfg.json nomacro.pl
 
 SUBDIRS		= compat
 
-INCLUDES	= $(PTHREAD_FLAGS) -fno-strict-aliasing $(JANSSON_INCLUDES)
+AM_CPPFLAGS	= $(PTHREAD_FLAGS) -fno-strict-aliasing $(JANSSON_AM_CPPFLAGS)
 
 bin_PROGRAMS	= minerd
 
@@ -57,7 +57,8 @@ minerd_SOURCES	= elist.h \
 		  crypto/c_jh.c \
 		  crypto/c_skein.c \
 		  crypto/hash.c \
-		  crypto/aesb.c
+		  crypto/aesb.c \
+                  yescrypt.c
 if USE_ASM
 if ARCH_x86
 minerd_SOURCES += sha2-x86.S scrypt-x86.S aesb-x86.S crypto/aesb-x86-impl.c
@@ -74,3 +75,4 @@ minerd_LDFLAGS	= $(PTHREAD_FLAGS)
 minerd_LDADD	= @LIBCURL@ @JANSSON_LIBS@ @PTHREAD_LIBS@ @WS2_LIBS@
 minerd_CPPFLAGS = @LIBCURL_CPPFLAGS@
 minerd_CFLAGS   = -Ofast -flto -fuse-linker-plugin
+ACLOCAL_AMFLAGS = -I m4
