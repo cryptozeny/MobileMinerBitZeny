@@ -284,6 +284,7 @@ static void stateCallback(CFNotificationCenterRef center, void *observer, CFNoti
       "-a","yescrypt",
       "-t",t,
       "-r","10",
+      //"--benchmark",
       NULL
     };
     // Actually start mining, calling the function from the pre-compiled cpuminer library:

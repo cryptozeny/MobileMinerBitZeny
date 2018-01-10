@@ -138,9 +138,11 @@ static inline void le32enc(void *pp, uint32_t x)
 #endif
 
 #if JANSSON_MAJOR_VERSION >= 2
-#define JSON_LOADS(str, err_ptr) json_loads((str), 0, (err_ptr))
+#define JSON_LOADS(str, err_ptr) json_loads(str, 0, err_ptr)
+#define JSON_LOAD_FILE(path, err_ptr) json_load_file(path, 0, err_ptr)
 #else
-#define JSON_LOADS(str, err_ptr) json_loads((str), (err_ptr))
+#define JSON_LOADS(str, err_ptr) json_loads(str, err_ptr)
+#define JSON_LOAD_FILE(path, err_ptr) json_load_file(path, err_ptr)
 #endif
 
  
@@ -173,9 +175,6 @@ static bool should_stop_mining=0;
 
 extern int scanhash_yescrypt(int thr_id, uint32_t *pdata, const uint32_t *ptarget, 
                             uint32_t max_nonce, unsigned long *hashes_done);
-
-extern int scanhash_sha256d(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
-                            uint32_t max_nonce, uint64_t *hashes_done);
 
 extern unsigned char *scrypt_buffer_alloc(int N);
 extern int scanhash_scrypt(int thr_id, uint32_t *pdata,
@@ -221,9 +220,6 @@ extern int scanhash_x15(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 
 extern void cryptonight_hash(void* output, const void* input, size_t input_len);
 
-extern int scanhash_cryptonight(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
-                            uint32_t max_nonce, uint64_t *hashes_done);
-
 struct thr_info {
 	int		id;
 	pthread_t	pth;
@@ -241,6 +237,8 @@ extern bool opt_redirect;
 extern int opt_timeout;
 extern bool want_longpoll;
 extern bool have_longpoll;
+extern bool have_gbt;
+extern bool allow_getwork;
 extern bool want_stratum;
 extern bool have_stratum;
 extern char *opt_cert;
@@ -252,8 +250,6 @@ extern struct thr_info *thr_info;
 extern int longpoll_thr_id;
 extern int stratum_thr_id;
 extern struct work_restart *work_restart;
-extern bool jsonrpc_2;
-extern bool aes_ni_supported;
 
 #define JSON_RPC_LONGPOLL	(1 << 0)
 #define JSON_RPC_QUIET_404	(1 << 1)
@@ -262,21 +258,16 @@ extern bool aes_ni_supported;
 extern void applog(int prio, const char *fmt, ...);
 extern json_t *json_rpc_call(CURL *curl, const char *url, const char *userpass,
 	const char *rpc_req, int *curl_err, int flags);
-extern char *bin2hex(const unsigned char *p, size_t len);
+void memrev(unsigned char *p, size_t len);
+extern void bin2hex(char *s, const unsigned char *p, size_t len);
+extern char *abin2hex(const unsigned char *p, size_t len);
 extern bool hex2bin(unsigned char *p, const char *hexstr, size_t len);
+extern int varint_encode(unsigned char *p, uint64_t n);
+extern size_t address_to_script(unsigned char *out, size_t outsz, const char *addr);
 extern int timeval_subtract(struct timeval *result, struct timeval *x,
 	struct timeval *y);
 extern bool fulltest(const uint32_t *hash, const uint32_t *target);
 extern void diff_to_target(uint32_t *target, double diff);
-
-struct work {
-    uint32_t data[32];
-    uint32_t target[8];
-
-    char *job_id;
-    size_t xnonce2_len;
-    unsigned char *xnonce2;
-};
 
 struct stratum_job {
 	char *job_id;
@@ -313,7 +304,6 @@ struct stratum_ctx {
 	unsigned char *xnonce1;
 	size_t xnonce2_size;
 	struct stratum_job job;
-	struct work work;
 	pthread_mutex_t work_lock;
 };
 
@@ -327,9 +317,6 @@ void stratum_disconnect(struct stratum_ctx *sctx);
 bool stratum_subscribe(struct stratum_ctx *sctx);
 bool stratum_authorize(struct stratum_ctx *sctx, const char *user, const char *pass);
 bool stratum_handle_method(struct stratum_ctx *sctx, const char *s);
-
-extern bool rpc2_job_decode(const json_t *job, struct work *work);
-extern bool rpc2_login_decode(const json_t *val);
 
 struct thread_q;
 

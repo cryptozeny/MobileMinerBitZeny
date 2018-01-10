@@ -20,7 +20,7 @@ minerd_SOURCES	= elist.h \
 		  compat.h \
 		  cpu-miner.c \
 		  util.c \
-		  sha2.c \
+                  sha2.c \
 		  scrypt.c \
 		  keccak.c \
 		  heavy.c \
@@ -28,7 +28,6 @@ minerd_SOURCES	= elist.h \
 		  skein.c \
 		  ink.c \
 		  blake.c \
-		  cryptonight.c \
 		  fresh.c \
 		  x11.c \
 		  x13.c \

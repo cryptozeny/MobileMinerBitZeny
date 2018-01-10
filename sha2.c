@@ -14,7 +14,10 @@
 #include <string.h>
 #include <inttypes.h>
 
-#if defined(USE_ASM) && defined(__arm__) && defined(__APCS_32__)
+#if defined(USE_ASM) && \
+	(defined(__x86_64__) || \
+	 (defined(__arm__) && defined(__APCS_32__)) || \
+	 (defined(__powerpc__) || defined(__ppc__) || defined(__PPC__)))
 #define EXTERN_SHA256
 #endif
 
@@ -469,7 +472,7 @@ void sha256d_ms_4way(uint32_t *hash,  uint32_t *data,
 	const uint32_t *midstate, const uint32_t *prehash);
 
 static inline int scanhash_sha256d_4way(int thr_id, uint32_t *pdata,
-	const uint32_t *ptarget, uint32_t max_nonce, uint64_t *hashes_done)
+	const uint32_t *ptarget, uint32_t max_nonce, unsigned long *hashes_done)
 {
 	uint32_t data[4 * 64] __attribute__((aligned(128)));
 	uint32_t hash[4 * 8] __attribute__((aligned(32)));
@@ -528,7 +531,7 @@ void sha256d_ms_8way(uint32_t *hash,  uint32_t *data,
 	const uint32_t *midstate, const uint32_t *prehash);
 
 static inline int scanhash_sha256d_8way(int thr_id, uint32_t *pdata,
-	const uint32_t *ptarget, uint32_t max_nonce, uint64_t *hashes_done)
+	const uint32_t *ptarget, uint32_t max_nonce, unsigned long *hashes_done)
 {
 	uint32_t data[8 * 64] __attribute__((aligned(128)));
 	uint32_t hash[8 * 8] __attribute__((aligned(32)));
@@ -581,50 +584,3 @@ static inline int scanhash_sha256d_8way(int thr_id, uint32_t *pdata,
 
 #endif /* HAVE_SHA256_8WAY */
 
-int scanhash_sha256d(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
-	uint32_t max_nonce, uint64_t *hashes_done)
-{
-	uint32_t data[64] __attribute__((aligned(128)));
-	uint32_t hash[8] __attribute__((aligned(32)));
-	uint32_t midstate[8] __attribute__((aligned(32)));
-	uint32_t prehash[8] __attribute__((aligned(32)));
-	uint32_t n = pdata[19] - 1;
-	const uint32_t first_nonce = pdata[19];
-	const uint32_t Htarg = ptarget[7];
-	
-#ifdef HAVE_SHA256_8WAY
-	if (sha256_use_8way())
-		return scanhash_sha256d_8way(thr_id, pdata, ptarget,
-			max_nonce, hashes_done);
-#endif
-#ifdef HAVE_SHA256_4WAY
-	if (sha256_use_4way())
-		return scanhash_sha256d_4way(thr_id, pdata, ptarget,
-			max_nonce, hashes_done);
-#endif
-	
-	memcpy(data, pdata + 16, 64);
-	sha256d_preextend(data);
-	
-	sha256_init(midstate);
-	sha256_transform(midstate, pdata, 0);
-	memcpy(prehash, midstate, 32);
-	sha256d_prehash(prehash, pdata + 16);
-	
-	do {
-		data[3] = ++n;
-		sha256d_ms(hash, data, midstate, prehash);
-		if (unlikely(swab32(hash[7]) <= Htarg)) {
-			pdata[19] = data[3];
-			sha256d_80_swap(hash, pdata);
-			if (fulltest(hash, ptarget)) {
-				*hashes_done = n - first_nonce + 1;
-				return 1;
-			}
-		}
-	} while (likely(n < max_nonce && !work_restart[thr_id].restart));
-	
-	*hashes_done = n - first_nonce + 1;
-	pdata[19] = n;
-	return 0;
-}
