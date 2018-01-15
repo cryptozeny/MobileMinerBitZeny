@@ -1,11 +1,12 @@
-# MobileMiner
-CPU Miner for ARM64 iOS Devices
+# MobileMinerBitZeny
+BitZeny CPU Miner for ARM64 iOS Devices
 
 This is a fork of Lucas Jones's cpuminer-multi, ( https://github.com/lucasjones/cpuminer-multi ) compiled for arm64 iOS devices. Credits go to the initial developers and contributors.
 
 # Compiled iOS App
-http://www.mediafire.com/file/f6qzt8jv26wtqm6/MobileMiner.ipa
+comming soon
 
+***If you want to install use 'Cydia impactor'***
 
 # Changes
 
@@ -41,14 +42,13 @@ if you want to keep the same argument formatting and parsing.
 # Dependencies
 
 Jansson
-https://github.com/akheron/jansson
+https://github.com/matsurowa25/build-libjansson-iOS
 
 curl for iOS
-https://github.com/sinofool/build-libcurl-ios
+https://github.com/matsurowa25/build-libcurl-ios
 
 openssl for iOS
-https://github.com/x2on/OpenSSL-for-iPhone
-
+https://github.com/matsurowa25/OpenSSL-for-iPhone
 
 
 # Instructions
@@ -56,7 +56,7 @@ https://github.com/x2on/OpenSSL-for-iPhone
 - Compile c files (cpuminer project files) for target arm64
 - After compile, run 
                 
-                ar cru minerd.a minerd-cpu-miner.o minerd-util.o minerd-sha2.o minerd-scrypt.o minerd-keccak.o minerd-heavy.o minerd-quark.o minerd-skein.o minerd-ink.o minerd-blake.o minerd-cryptonight.o minerd-fresh.o minerd-x11.o minerd-x13.o minerd-x14.o minerd-x15.o sha3/minerd-sph_keccak.o sha3/minerd-sph_hefty1.o sha3/minerd-sph_groestl.o sha3/minerd-sph_skein.o sha3/minerd-sph_bmw.o sha3/minerd-sph_jh.o sha3/minerd-sph_shavite.o sha3/minerd-sph_blake.o sha3/minerd-sph_luffa.o sha3/minerd-sph_cubehash.o sha3/minerd-sph_simd.o sha3/minerd-sph_echo.o sha3/minerd-sph_hamsi.o sha3/minerd-sph_fugue.o sha3/minerd-sph_shabal.o sha3/minerd-sph_whirlpool.o crypto/minerd-oaes_lib.o crypto/minerd-c_keccak.o crypto/minerd-c_groestl.o crypto/minerd-c_blake256.o crypto/minerd-c_jh.o crypto/minerd-c_skein.o crypto/minerd-hash.o crypto/minerd-aesb.o   minerd-sha2-arm.o minerd-scrypt-arm.o minerd-aesb-arm.o crypto/minerd-aesb-x86-impl.o
+                ar cru ./MobileMiner/minerd.a minerd-cpu-miner.o minerd-util.o minerd-sha2.o minerd-scrypt.o minerd-keccak.o minerd-heavy.o minerd-quark.o minerd-skein.o minerd-ink.o minerd-blake.o minerd-fresh.o minerd-x11.o minerd-x13.o minerd-x14.o minerd-x15.o sha3/minerd-sph_keccak.o sha3/minerd-sph_hefty1.o sha3/minerd-sph_groestl.o sha3/minerd-sph_skein.o sha3/minerd-sph_bmw.o sha3/minerd-sph_jh.o sha3/minerd-sph_shavite.o sha3/minerd-sph_blake.o sha3/minerd-sph_luffa.o sha3/minerd-sph_cubehash.o sha3/minerd-sph_simd.o sha3/minerd-sph_echo.o sha3/minerd-sph_hamsi.o sha3/minerd-sph_fugue.o sha3/minerd-sph_shabal.o sha3/minerd-sph_whirlpool.o crypto/minerd-oaes_lib.o crypto/minerd-c_keccak.o crypto/minerd-c_groestl.o crypto/minerd-c_blake256.o crypto/minerd-c_jh.o crypto/minerd-c_skein.o crypto/minerd-hash.o crypto/minerd-aesb.o minerd-sha2-arm.o minerd-scrypt-arm.o minerd-aesb-arm.o minerd-yescrypt.o
 
 - This will create a "minerd.a" library. Drag minerd.a in Xcode
 
