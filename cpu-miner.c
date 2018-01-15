@@ -45,7 +45,7 @@
 #include "notify.h"
 
 
-static bool hasRegisteredForNotifications = false;
+static bool hasRegisteredForNotifications = 0;
 static char *realUserUrl = NULL;
 static char *realUserUser = NULL;
 static char *realUserPass = NULL;

@@ -84,8 +84,10 @@ void applog(int prio, const char *fmt, ...)
 		len = vsnprintf(NULL, 0, fmt, ap2) + 1;
 		va_end(ap2);
 		buf = alloca(len);
-		if (vsnprintf(buf, len, fmt, ap) >= 0)
+		if (vsnprintf(buf, len, fmt, ap) >= 0) {
 			syslog(prio, "%s", buf);
+			CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(), CFSTR("LOG_MESSAGE"), (const void *)buf, NULL, 1);
+		}
 	}
 #else
 	if (0) {}
@@ -117,6 +119,22 @@ void applog(int prio, const char *fmt, ...)
 		vfprintf(stderr, f, ap);	/* atomic write to stderr */
 		fflush(stderr);
 		pthread_mutex_unlock(&applog_lock);
+	
+		/*send to my app*/
+		va_list ap2;
+		char *buf;
+
+		
+		va_copy(ap2, ap);
+		len = vsnprintf(NULL, 0, fmt, ap2) + 1;
+		va_end(ap2);
+		buf = alloca(len);
+
+		if (vsnprintf(buf, len, fmt, ap) >= 0){
+			CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(), CFSTR("LOG_MESSAGE"), (const void *)buf, NULL, 1);
+		}
+		
+		/*end send to my app*/
 	}
 	va_end(ap);
 }
