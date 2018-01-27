@@ -4,10 +4,7 @@ BitZeny CPU Miner for ARM64 iOS Devices
 This is a fork of Lucas Jones's cpuminer-multi, ( https://github.com/lucasjones/cpuminer-multi ) compiled for arm64 iOS devices. Credits go to the initial developers and contributors.
 
 # Compiled iOS App
-http://www.mediafire.com/file/e3aqpy371vtsy3z/MobileMiner.ipa.zip
-
-***unzip password is 'bitzeny'***
-***If you want to install use 'Cydia impactor'***
+https://github.com/matsurowa25/MobileMinerBitZeny/releases
 
 # Changes
 
